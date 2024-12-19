@@ -1,3 +1,3 @@
 # clone-tabnews
 
-testando conhecimento passado pelo felipe schamps
+testando conhecimento passado pelo mestre flipe Deschamps
