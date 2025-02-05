@@ -14,7 +14,8 @@ async function query(queryObject) {
     const resultado = await client.query(queryObject);
     return resultado;
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    throw error;
   } finally {
     await client.end(); //Desconectando do banco, função mandatoria no final de todas as query para não ocasionar uma conexão pendurada()
   }
