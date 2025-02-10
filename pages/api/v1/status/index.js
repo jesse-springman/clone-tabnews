@@ -16,8 +16,6 @@ async function status(request, response) {
 
   let opened_connections = dataOpenConnect.rows[0].count;
 
-  console.log(opened_connections);
-
   const dataVersionPostgres = await databaseDev.query("SHOW server_version;");
 
   const version = dataVersionPostgres.rows[0].server_version;
