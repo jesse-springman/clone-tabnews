@@ -13,6 +13,12 @@ export default async function migrations(request, response) {
     verbose: true,
   };
 
+  if (request.method === "DELETE") {
+    const migrationDELETE = await migrationRunner(defalutMigrations);
+
+    return response.status(201).json(migrationDELETE);
+  }
+
   if (request.method === "GET") {
     const migrationPending = await migrationRunner(defalutMigrations);
 
