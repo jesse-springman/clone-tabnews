@@ -16,7 +16,9 @@ export default async function migrations(request, response) {
   if (request.method === "DELETE") {
     const migrationDELETE = await migrationRunner(defalutMigrations);
 
-    return response.status(201).json(migrationDELETE);
+    await dbClient.end();
+
+    return response.status(200).json(migrationDELETE);
   }
 
   if (request.method === "GET") {
