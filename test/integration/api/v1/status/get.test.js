@@ -5,6 +5,8 @@ test("api/v1/status should 200", async () => {
 
   const responseBody = await response.json();
 
+  console.log(responseBody);
+
   const dateParsed = new Date(responseBody.uptade_alt).toISOString();
 
   expect(dateParsed).toEqual(responseBody.uptade_alt);
