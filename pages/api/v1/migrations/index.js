@@ -15,11 +15,11 @@ export default async function migrations(request, response) {
   };
 
   if (request.method === "DELETE") {
-    const migrationDELETE = await migrationRunner(defalutMigrations);
-
     await dbClient.end();
 
-    return response.status(200).json(migrationDELETE);
+    return response.json({
+      message: "ERRO",
+    });
   }
 
   if (request.method === "GET") {
