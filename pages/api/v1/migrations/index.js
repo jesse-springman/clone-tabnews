@@ -3,45 +3,49 @@ import { join } from "node:path";
 import database from "infra/database";
 
 export default async function migrations(request, response) {
-  const dbClient = await database.getNewClient(); //retorna um client conectado
-
-  const defalutMigrations = {
-    dbClient: dbClient,
-    dryRun: true,
-    dir: join("infra", "migrations"),
-    direction: "up",
-    verbose: true,
-    migrationsTable: "pgmigrations",
-  };
-
-  if (request.method === "DELETE") {
-    await dbClient.end();
-
-    return response.json({
-      message: "ERRO",
+  const allowedmethods = ["GET", "POST"];
+  if (!allowedmethods.includes(request.method)) {
+    return response.status(405).json({
+      Erro: `ERROR ${request.method} not allowed methods`,
     });
   }
 
-  if (request.method === "GET") {
-    const migrationPending = await migrationRunner(defalutMigrations);
+  let dbClient;
 
-    await dbClient.end();
+  dbClient = await database.getNewClient(); //retorna um client conectado
 
-    return response.status(200).json(migrationPending);
-  }
+  try {
+    const defalutMigrations = {
+      dbClient,
+      dryRun: true,
+      dir: join("infra", "migrations"),
+      direction: "up",
+      verbose: true,
+      migrationsTable: "pgmigrations",
+    };
 
-  if (request.method === "POST") {
-    const migrationImplementada = await migrationRunner({
-      ...defalutMigrations,
-      dryRun: false,
-    });
+    if (request.method === "GET") {
+      const migrationPending = await migrationRunner(defalutMigrations);
 
-    await dbClient.end();
-
-    if (migrationImplementada.length > 0) {
-      return response.status(201).json(migrationImplementada);
+      return response.status(200).json(migrationPending);
     }
 
-    return response.status(200).json(migrationImplementada);
+    if (request.method === "POST") {
+      const migrationImplementada = await migrationRunner({
+        ...defalutMigrations,
+        dryRun: false,
+      });
+
+      if (migrationImplementada.length > 0) {
+        return response.status(201).json(migrationImplementada);
+      }
+
+      return response.status(200).json(migrationImplementada);
+    }
+  } catch (error) {
+    console.error(error);
+    throw error;
+  } finally {
+    await dbClient.end();
   }
 }
