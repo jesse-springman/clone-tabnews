@@ -12,9 +12,9 @@ export default async function migrations(request, response) {
 
   let dbClient;
 
-  dbClient = await database.getNewClient(); //retorna um client conectado
-
   try {
+    dbClient = await database.getNewClient(); //retorna um client conectado
+
     const defalutMigrations = {
       dbClient,
       dryRun: true,
