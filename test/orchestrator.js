@@ -10,7 +10,7 @@ async function waitAllServices() {
     });
 
     async function fetchPageStatus() {
-      const response = await fetch("http://localhost:3000/api/v1/statu");
+      const response = await fetch("http://localhost:3000/api/v1/status");
 
       if (response.status !== 200) {
         throw error;
