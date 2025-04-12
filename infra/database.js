@@ -1,7 +1,5 @@
 import { Client } from "pg"; //Chamando o "{Client} do modulo "pg"
 
-let testee = 12;
-
 async function query(queryObject) {
   let client;
   try {
