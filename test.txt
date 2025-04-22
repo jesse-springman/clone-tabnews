@@ -1,4 +1,0 @@
------BEGIN PRIVATE KEY-----
-MIICeAIBADANBgkqhkiG9w0BAQEFAASCAmIwggJeAgEAAoGBAMK1d3a3M+F8LyVv
-fakeKeyXkfdls93jkfdslfjdsfjlwejfkljdsflkjewfjsdlfj==
------END PRIVATE KEY-----
