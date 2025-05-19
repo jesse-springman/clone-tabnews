@@ -16,10 +16,9 @@ describe("POST to api/v1/migrations", () => {
           },
         );
 
-        const responseBody = await response.json();
-
         expect(response.status).toBe(201);
 
+        const responseBody = await response.json();
         //validação para se o body in request é um array
         expect(Array.isArray(responseBody)).toBe(true);
 
@@ -28,20 +27,19 @@ describe("POST to api/v1/migrations", () => {
       });
 
       test("For second time", async () => {
-        const response = await fetch(
+        const response2 = await fetch(
           "http://localhost:3000/api/v1/migrations",
           {
             method: "POST",
           },
         );
 
-        expect(response.status).toBe(200);
-        const responseBody = await response.json();
+        expect(response2.status).toBe(200);
+        const responseBody2 = await response2.json();
 
-        //migration Implementada o array fica vazio
-        expect(responseBody.length).toBe(0);
+        expect(Array.isArray(responseBody2)).toBe(true);
 
-        // console.log(resultData);
+        expect(responseBody2.length).toBe(0);
       });
     });
   });

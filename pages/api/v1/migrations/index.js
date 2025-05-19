@@ -26,7 +26,7 @@ export default async function migrations(request, response) {
 
     if (request.method === "GET") {
       const migrationPending = await migrationRunner(defalutMigrations);
-
+      await dbClient.end();
       return response.status(200).json(migrationPending);
     }
 
@@ -35,6 +35,8 @@ export default async function migrations(request, response) {
         ...defalutMigrations,
         dryRun: false,
       });
+
+      await dbClient.end();
 
       if (migrationImplementada.length > 0) {
         return response.status(201).json(migrationImplementada);
