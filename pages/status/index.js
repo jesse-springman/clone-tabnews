@@ -11,6 +11,7 @@ export default function StatusPage() {
     <>
       <h1>Status</h1>
       <UpdateAlt />
+      <AllData />
     </>
   );
 }
@@ -21,12 +22,28 @@ function UpdateAlt() {
   });
 
   let updateAltText = "Carregando";
-  let numerosDeConexoes;
-  let numerosDeConexoesAbertas;
-  let versaoNode;
 
   if (!isLoading && data) {
     updateAltText = new Date(data.uptade_alt).toLocaleString("pt-BR");
+  }
+
+  return (
+    <>
+      <h2>Ultima atualização :{updateAltText}</h2>
+    </>
+  );
+}
+
+function AllData() {
+  const { data, isLoading } = useSWR("/api/v1/status", fetchAPI, {
+    refreshInterval: 2000,
+  });
+
+  let numerosDeConexoes = "Carregando...";
+  let numerosDeConexoesAbertas = "Carregando...";
+  let versaoNode = "Carregando...";
+
+  if (!isLoading && data) {
     numerosDeConexoes = data.dependencies.database.max_connections;
     numerosDeConexoesAbertas = data.dependencies.database.opened_connections;
     versaoNode = data.dependencies.database.version;
@@ -34,7 +51,7 @@ function UpdateAlt() {
 
   return (
     <div>
-      Ultima atualização:{updateAltText}
+      <h2>DataBase</h2>
       <p> Numeros de conexões maxímas permitidas : {numerosDeConexoes} </p>
       <p> Numeros de conexões abertas : {numerosDeConexoesAbertas}</p>
       <p>Versão do servidor: {versaoNode}</p>
