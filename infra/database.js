@@ -1,4 +1,5 @@
-import { Client } from "pg"; //Chamando o "{Client} do modulo "pg"
+import { Client } from "pg";
+import { ServicesError } from "./erros.js";
 
 async function query(queryObject) {
   let client;
@@ -7,9 +8,12 @@ async function query(queryObject) {
     const resultado = await client.query(queryObject);
     return resultado;
   } catch (error) {
-    console.log("\n log do Controller database.js");
-    console.error(error);
-    throw error;
+    const errorService = new ServicesError({
+      messagee: "Erro na conexão com o Banco de Dados ou na Query",
+      cause: error,
+    });
+
+    throw errorService;
   } finally {
     await client?.end();
   }
