@@ -1,13 +1,12 @@
 export class InternalServerError extends Error {
-  constructor({ cause, statusCode  }) {
+  constructor({ cause, statusCode }) {
     super("Um erro interno não esparado aconteceu", {
       cause,
-     
     });
 
-     this.name = "InternalServerError",
-      this.action = "Entre em contato com o suporte",
-      this.statusCode = statusCode || 500;
+    (this.name = "InternalServerError"),
+      (this.action = "Entre em contato com o suporte"),
+      (this.statusCode = statusCode || 500);
   }
 
   toJSON() {
@@ -19,19 +18,16 @@ export class InternalServerError extends Error {
     };
   }
 }
-
-
-
 
 export class ServicesError extends Error {
   constructor({ messagee, cause }) {
-    super( messagee || "Um erro no banco de dados não esparado aconteceu", {
+    super(messagee || "Um erro no banco de dados não esparado aconteceu", {
       cause,
     });
 
-     this.name = "ServiceError",
-      this.action = "Entre em contato com o suporte",
-      this.statusCode = 503; // 503 = Service not available
+    (this.name = "ServiceError"),
+      (this.action = "Entre em contato com o suporte"),
+      (this.statusCode = 503); // 503 = Service not available
   }
 
   toJSON() {
@@ -43,20 +39,18 @@ export class ServicesError extends Error {
     };
   }
 }
-
-
 
 export class MethodNoAllowedError extends Error {
   constructor() {
     super("Esse método não é válido para esse endpoint");
 
-      this.name = "MethodNotAllowedError",
-      this.action = "Verifique quais métodos HTTP são válidos para esse endoint",
-      this.statusCode = 405;
+    (this.name = "MethodNotAllowedError"),
+      (this.action =
+        "Verifique quais métodos HTTP são válidos para esse endoint"),
+      (this.statusCode = 405);
   }
 
   toJSON() {
-  
     return {
       name: this.name,
       message: this.message,

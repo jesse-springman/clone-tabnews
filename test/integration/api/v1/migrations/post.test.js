@@ -19,10 +19,9 @@ describe("POST to api/v1/migrations", () => {
         expect(response.status).toBe(201);
 
         const responseBody = await response.json();
-        //validação para se o body in request é um array
+
         expect(Array.isArray(responseBody)).toBe(true);
 
-        //migration pendente ocupa posição no array
         expect(responseBody.length).toBeGreaterThan(0);
       });
 
