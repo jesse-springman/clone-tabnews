@@ -10,6 +10,9 @@ function onErrorHandler(error, request, response) {
   response.status(publicErrorObject.statusCode).json(publicErrorObject);
 }
 
+
+
+
 function onNoMatchHandle(request, response) {
   const publicErrorObject = new MethodNoAllowedError();
 
@@ -20,6 +23,7 @@ const controllerHandler = {
   errorsHandlers: {
     onError: onErrorHandler,
     onNoMatch: onNoMatchHandle,
+
   },
 };
 

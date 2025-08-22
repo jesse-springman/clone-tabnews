@@ -40,6 +40,10 @@ export class ServicesError extends Error {
   }
 }
 
+
+
+
+
 export class MethodNoAllowedError extends Error {
   constructor() {
     super("Esse método não é válido para esse endpoint");
