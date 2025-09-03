@@ -1,5 +1,6 @@
+import { version as uuIdVersion } from "uuid"; // Descestruturação ja renomeando o metodo que era "version"  para "uuidVersion"
 import orchestrator from "test/orchestrator";
-import database from "infra/database";
+
 
 beforeAll(async () => {
   await orchestrator.waitAllServices();
@@ -7,27 +8,97 @@ beforeAll(async () => {
   await orchestrator.runPendingMigrations();
 });
 
-describe("POST api/v1/users",  () => {
+describe("POST api/v1/users", () => {
   test("With unique and valid data", async () => {
 
-    await database.query({
-      text: "INSERT INTO users (username, email, password) VALUES ($1, $2, $3);",
-      values: ["jesseSpringman", "jesseTeste@gmail.com", "senha123"]
+    const response = await fetch("http://localhost:3000/api/v1/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({
+        username: "jesseSpringman",
+        email: "jesseTeste@gmail.com",
+        password: "senha123"
+      })
     });
 
-    let usersData = await database.query("SELECT * FROM users;")
-    
-     console.log(usersData.rows);
+    expect(response.status).toBe(201);
+
+    const resposeBody = await response.json()
+
+    expect(resposeBody).toEqual({
+      id: resposeBody.id,
+      username: 'jesseSpringman',
+      email: 'jesseTeste@gmail.com',
+      password: 'senha123',
+      create_at: resposeBody.create_at,
+      uptade_at: resposeBody.uptade_at
+    })
+
+    expect(uuIdVersion(resposeBody.id)).toBe(4)//uuIdVersion() pega o valor passado via argumento e valida se é um uuid pela versão que o Postgres usa que é a 4
+    expect(Date.parse(resposeBody.create_at)).not.toBeNaN();
+    expect(Date.parse(resposeBody.uptade_at)).not.toBeNaN();
+  });
+
+});
+
+
+
+describe("POST /api/v1/users validate email", () => {
+  test("validate 'email' duplicat", async () => {
 
     const response = await fetch("http://localhost:3000/api/v1/users", {
-        method: "POST"
-      });
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
 
-      expect(response.status).toBe(201);
-
-
-     
-
+      body: JSON.stringify({
+        username: "testEmailDuplicado",
+        email: "JesseTeste@gmail.com",
+        password: "senha123"
+      })
     });
- 
+
+    expect(response.status).toBe(400);
+
+    const resposeBody = await response.json();
+
+    expect(resposeBody).toEqual({
+      name: "ValidationError",
+      message: "Erro de validação de dados",
+      action: "Altere os dados inseridos",
+      status_code: 400
+    })
+
+  });
+
 });
+
+
+describe("POST /api/v1/users validate username", () => {
+  test("validate 'username' duplicat", async () => {
+    const response = await fetch('http://localhost:3000/api/v1/users', {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+
+      body: JSON.stringify({
+        username: "jessespringman",
+        email: "username@gmail.com",
+        password: "senha123"
+      }),
+    })
+
+    
+    expect(response.status).toBe(400)
+    
+    // const responseBody = await response.json()
+    // console.log(responseBody);
+  })
+})
