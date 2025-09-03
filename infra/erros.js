@@ -41,7 +41,27 @@ export class ServicesError extends Error {
 }
 
 
+export class ValidationError extends Error {
+  constructor({ message, action }) {
+    super(message || "Erro na validação de dados", {
+      message,
+      action
+    });
 
+    (this.name = "ValidationError"),
+      (this.action = "Altere os dados inseridos"),
+      (this.statusCode = 400);
+  }
+
+  toJSON() {
+    return {
+      name: this.name,
+      message: this.message,
+      action: this.action,
+      status_code: this.statusCode,
+    };
+  }
+}
 
 
 export class MethodNoAllowedError extends Error {
