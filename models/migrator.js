@@ -2,19 +2,16 @@ import migrationRunner from "node-pg-migrate";
 import { resolve } from "node:path";
 import database from "infra/database";
 
-
-  const defalutMigrations = {
-    dryRun: true,
-    dir: resolve("infra", "migrations"),
-    direction: "up",
-    log:()=>{}, //função vazia para tunelar os "logs" do terminal e para de atrabalhar nos tests
-    migrationsTable: "pgmigrations",
-  };
-
-  let dbClient;
-
+const defalutMigrations = {
+  dryRun: true,
+  dir: resolve("infra", "migrations"),
+  direction: "up",
+  log: () => {}, //função vazia para tunelar os "logs" do terminal e para de atrabalhar nos tests
+  migrationsTable: "pgmigrations",
+};
 
 async function pendingMigrations() {
+  let dbClient;
 
   try {
     dbClient = await database.getNewClient();
@@ -24,18 +21,15 @@ async function pendingMigrations() {
       dbClient,
     });
 
-    return migrationPending
-  } 
-  
-
-  finally {
+    return migrationPending;
+  } finally {
     await dbClient?.end();
   }
 }
 
-async function runMigrationPending(){
-
-    try {
+async function runMigrationPending() {
+  let dbClient;
+  try {
     dbClient = await database.getNewClient();
 
     const migrationImplementada = await migrationRunner({
@@ -44,8 +38,7 @@ async function runMigrationPending(){
       dryRun: false,
     });
 
-    return migrationImplementada
-
+    return migrationImplementada;
   } finally {
     await dbClient?.end();
   }
@@ -53,7 +46,7 @@ async function runMigrationPending(){
 
 const modelMigration = {
   pendingMigrations,
-  runMigrationPending
-}
+  runMigrationPending,
+};
 
-export default modelMigration
+export default modelMigration;

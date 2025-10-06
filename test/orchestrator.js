@@ -25,11 +25,9 @@ async function databaseClean() {
   await database.query("drop schema public cascade; create schema public");
 }
 
-
-async function runPendingMigrations(){
-  await modelMigration.runMigrationPending()
+async function runPendingMigrations() {
+  await modelMigration.runMigrationPending();
 }
-
 
 const orchestrator = {
   waitAllServices,

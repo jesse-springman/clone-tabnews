@@ -1,9 +1,13 @@
-import { InternalServerError, MethodNoAllowedError, ValidationError, NotFound } from "infra/erros";
+import {
+  InternalServerError,
+  MethodNoAllowedError,
+  ValidationError,
+  NotFound,
+} from "infra/erros";
 
 function onErrorHandler(error, request, response) {
-
   if (error instanceof ValidationError || error instanceof NotFound) {
-    return response.status(error.statusCode).json(error)
+    return response.status(error.statusCode).json(error);
   }
 
   const publicErrorObject = new InternalServerError({
@@ -15,9 +19,6 @@ function onErrorHandler(error, request, response) {
   response.status(publicErrorObject.statusCode).json(publicErrorObject);
 }
 
-
-
-
 function onNoMatchHandle(request, response) {
   const publicErrorObject = new MethodNoAllowedError();
 
@@ -28,7 +29,6 @@ const controllerHandler = {
   errorsHandlers: {
     onError: onErrorHandler,
     onNoMatch: onNoMatchHandle,
-
   },
 };
 

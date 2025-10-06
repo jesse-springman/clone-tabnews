@@ -1,28 +1,26 @@
 exports.up = (pgm) => {
-
   pgm.createTable("users", {
-
     id: {
-      type: 'uuid',
+      type: "uuid",
       primaryKey: true,
-      default: pgm.func("gen_random_uuid()")
+      default: pgm.func("gen_random_uuid()"),
     },
 
     username: {
-      type: 'varchar(30)',
+      type: "varchar(30)",
       notNull: true,
-      unique: true
+      unique: true,
     },
 
     email: {
       type: "varchar(220)",
       notNull: true,
-      unique: true
+      unique: true,
     },
 
     password: {
       type: "varchar(60)",
-      notNull: true
+      notNull: true,
     },
 
     create_at: {
@@ -35,13 +33,8 @@ exports.up = (pgm) => {
       type: "timestamptz",
       default: pgm.func("timezone('utc', now())"),
       notNull: true,
-    }
-
+    },
   });
-
 };
-
-
-
 
 exports.down = false;

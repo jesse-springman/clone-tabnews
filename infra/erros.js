@@ -40,13 +40,11 @@ export class ServicesError extends Error {
   }
 }
 
-
-
 export class NotFound extends Error {
   constructor({ message, action }) {
     super(message || "Usário não encontrado no sistema", {
       message,
-      action
+      action,
     });
 
     (this.name = "NotFound"),
@@ -64,16 +62,11 @@ export class NotFound extends Error {
   }
 }
 
-
-
-
-
-
 export class ValidationError extends Error {
   constructor({ message, action }) {
     super(message || "Erro na validação de dados", {
       message,
-      action
+      action,
     });
 
     (this.name = "ValidationError"),
@@ -90,7 +83,6 @@ export class ValidationError extends Error {
     };
   }
 }
-
 
 export class MethodNoAllowedError extends Error {
   constructor() {
