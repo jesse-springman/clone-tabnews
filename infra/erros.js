@@ -40,6 +40,50 @@ export class ServicesError extends Error {
   }
 }
 
+export class NotFound extends Error {
+  constructor({ message, action }) {
+    super(message || "Usário não encontrado no sistema", {
+      message,
+      action,
+    });
+
+    (this.name = "NotFound"),
+      (this.action = action || "Verifique os dados da cosnulta estão certos"),
+      (this.statusCode = 404);
+  }
+
+  toJSON() {
+    return {
+      name: this.name,
+      message: this.message,
+      action: this.action,
+      status_code: this.statusCode,
+    };
+  }
+}
+
+export class ValidationError extends Error {
+  constructor({ message, action }) {
+    super(message || "Erro na validação de dados", {
+      message,
+      action,
+    });
+
+    (this.name = "ValidationError"),
+      (this.action = "Altere os dados inseridos"),
+      (this.statusCode = 400);
+  }
+
+  toJSON() {
+    return {
+      name: this.name,
+      message: this.message,
+      action: this.action,
+      status_code: this.statusCode,
+    };
+  }
+}
+
 export class MethodNoAllowedError extends Error {
   constructor() {
     super("Esse método não é válido para esse endpoint");
