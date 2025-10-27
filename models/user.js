@@ -1,5 +1,6 @@
 import database from "infra/database";
 import { ValidationError, NotFound } from "infra/erros";
+import password from "./password.js"
 
 async function findOneUser(urlUsername) {
   const userFound = await searchUsername(urlUsername);
@@ -24,8 +25,9 @@ async function findOneUser(urlUsername) {
 
 async function createUser(inputValuesUser) {
   await validateUniqueEmail(inputValuesUser.email);
+  await validetionUniqueUsername(inputValuesUser.username);
+  await hashPasswordOnObject(inputValuesUser); //att o obj com hash da senha
 
-  await ValidetionUniqueUsername(inputValuesUser.username);
 
   //  await searchUsername(urlUsername)
 
@@ -59,7 +61,7 @@ async function createUser(inputValuesUser) {
     }
   }
 
-  async function ValidetionUniqueUsername(username) {
+  async function validetionUniqueUsername(username) {
     const usernameAtBank = await database.query({
       text: "SELECT username FROM users WHERE LOWER(username) = LOWER($1);",
       values: [username],
@@ -72,6 +74,16 @@ async function createUser(inputValuesUser) {
       });
     }
   }
+
+
+async function hashPasswordOnObject(inputValuesUser) {
+  if (!inputValuesUser.password) throw new Error("Password não fornecida");
+  const hashedPassword = await password.hash(inputValuesUser.password);
+  inputValuesUser.password = hashedPassword; // substitui a senha original pelo hash antes de salvar no banco
+
+  return inputValuesUser;
+}
+
 }
 
 const userModel = {

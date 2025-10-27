@@ -1,11 +1,18 @@
 import { version as uuIdVersion } from "uuid"; // Descestruturação ja renomeando o metodo que era "version"  para "uuidVersion"
 import orchestrator from "test/orchestrator";
+import userModel from "models/user.js";
+import password from "models/password.js";
+import "dotenv/config";
+
+
 
 beforeAll(async () => {
   await orchestrator.waitAllServices();
   await orchestrator.databaseClean();
   await orchestrator.runPendingMigrations();
 });
+
+
 
 describe("POST api/v1/users", () => {
   test("With unique and valid data", async () => {
@@ -18,7 +25,7 @@ describe("POST api/v1/users", () => {
       body: JSON.stringify({
         username: "jesseSpringman",
         email: "jesseTeste1@gmail.com",
-        password: "senha123",
+        password:"senha123",
       }),
     });
 
@@ -30,14 +37,26 @@ describe("POST api/v1/users", () => {
       id: resposeBody.id,
       username: "jesseSpringman",
       email: "jesseTeste1@gmail.com",
-      password: "senha123",
+      password: resposeBody.password,
       create_at: resposeBody.create_at,
       uptade_at: resposeBody.uptade_at,
     });
 
+
     expect(uuIdVersion(resposeBody.id)).toBe(4); //uuIdVersion() pega o valor passado via argumento e valida se é um uuid pela versão que o Postgres usa que é a 4
     expect(Date.parse(resposeBody.create_at)).not.toBeNaN();
     expect(Date.parse(resposeBody.uptade_at)).not.toBeNaN();
+
+
+    const userInDataBase = await userModel.findOneUser("jesseSpringman");
+    const correctPasswordMatch = await password.compare(
+      "senha123",
+      userInDataBase.password,
+     ); //compara a senha com o HASH criado
+
+    expect(correctPasswordMatch).toBe(true);
+
+
   });
 });
 
