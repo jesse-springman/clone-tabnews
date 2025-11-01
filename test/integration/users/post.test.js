@@ -15,7 +15,7 @@ beforeAll(async () => {
 
 
 describe("POST api/v1/users", () => {
-  test("With unique and valid data", async () => {
+  test("validation unique data", async () => {
     const response = await fetch("http://localhost:3000/api/v1/users", {
       method: "POST",
       headers: {
@@ -25,7 +25,7 @@ describe("POST api/v1/users", () => {
       body: JSON.stringify({
         username: "jesseSpringman",
         email: "jesseTeste1@gmail.com",
-        password:"senha123",
+        password: "senha123",
       }),
     });
 
@@ -49,14 +49,11 @@ describe("POST api/v1/users", () => {
 
 
     const userInDataBase = await userModel.findOneUser("jesseSpringman");
-    const correctPasswordMatch = await password.compare(
-      "senha123",
-      userInDataBase.password,
-     ); //compara a senha com o HASH criado
-
+    const correctPasswordMatch = await password.compare("senha123", userInDataBase.password);
     expect(correctPasswordMatch).toBe(true);
 
-
+    const wrongPasswordMatch = await password.compare("senhaErrada",userInDataBase.password);
+    expect(wrongPasswordMatch).toBe(false);
   });
 });
 

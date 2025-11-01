@@ -15,7 +15,7 @@ async function findOneUser(urlUsername) {
     if (result.rowCount === 0) {
       throw new NotFound({
         message: "Usuário não encontrado",
-        action: "Verifique os dados se estão corretos",
+        action: "Verifique os dados se estão corretos"
       });
     }
 
@@ -24,8 +24,8 @@ async function findOneUser(urlUsername) {
 }
 
 async function createUser(inputValuesUser) {
-  await validateUniqueEmail(inputValuesUser.email);
   await validetionUniqueUsername(inputValuesUser.username);
+  await validateUniqueEmail(inputValuesUser.email);
   await hashPasswordOnObject(inputValuesUser); //att o obj com hash da senha
 
 
@@ -47,48 +47,117 @@ async function createUser(inputValuesUser) {
     return result.rows[0];
   }
 
-  async function validateUniqueEmail(email) {
-    const result = await database.query({
-      text: "SELECT email FROM users WHERE LOWER(email) = LOWER($1);",
-      values: [email],
-    });
 
-    if (result.rowCount > 0) {
-      throw new ValidationError({
-        message: "Erro de validação de dados",
-        action: "Altere os dados inseridos",
-      });
-    }
+
+
+  async function hashPasswordOnObject(inputValuesUser) {
+    if (!inputValuesUser.password) throw new Error("Password não fornecida");
+    const hashedPassword = await password.hash(inputValuesUser.password);
+    inputValuesUser.password = hashedPassword; // substitui a senha original pelo hash antes de salvar no banco
+
+    return inputValuesUser;
   }
 
-  async function validetionUniqueUsername(username) {
-    const usernameAtBank = await database.query({
-      text: "SELECT username FROM users WHERE LOWER(username) = LOWER($1);",
-      values: [username],
-    });
+}
 
-    if (usernameAtBank.rowCount > 0) {
-      throw new ValidationError({
-        mensage: "UsernameExistente",
-        action: "Username existente, altere por favor",
-      });
-    }
+
+
+async function update(username, inputUser) {
+ const user =  await findOneUser(username);
+
+  if ("username" in inputUser) {
+    await validetionUniqueUsername(inputUser.username);
   }
 
+  if ("email" in inputUser) {
+    await validateUniqueEmail(inputUser.email);
+  }
 
-async function hashPasswordOnObject(inputValuesUser) {
-  if (!inputValuesUser.password) throw new Error("Password não fornecida");
-  const hashedPassword = await password.hash(inputValuesUser.password);
-  inputValuesUser.password = hashedPassword; // substitui a senha original pelo hash antes de salvar no banco
+  const dataAtt = { ...user, ...inputUser }
 
-  return inputValuesUser;
+  const userAtt = await updateDataUser(dataAtt)
+
+  return userAtt
+
+
+  async function updateDataUser(dataAtt) {
+  const result = await database.query({
+    text:
+          ` UPDATE
+              users
+            SET
+              username = $1,
+              email = $2,
+              password = $3,
+              updated_at = timezone('utc' , now())
+            WHERE
+              id = $4
+            RETURNING * `,
+
+    values:[dataAtt.username,
+            dataAtt.email,
+            dataAtt.password, 
+            dataAtt.id]
+  });
+
+  return result.rows[0];
+
 }
 
+
+
+
+
+
+
+
 }
+
+
+
+
+
+
+
+async function validetionUniqueUsername(username) {
+  const usernameInBank = await database.query({
+    text: "SELECT username FROM users WHERE LOWER(username) = LOWER($1);",
+    values: [username],
+  });
+
+  if (usernameInBank.rowCount > 0) {
+    throw new ValidationError({
+      mensage: "Username Existente",
+      action: "Username existente, altere por favor",
+    });
+  }
+}
+
+
+
+
+
+
+async function validateUniqueEmail(email) {
+  const result = await database.query({
+    text: "SELECT email FROM users WHERE LOWER(email) = LOWER($1);",
+    values: [email],
+  });
+
+  if (result.rowCount > 0) {
+    throw new ValidationError({
+      message: "Erro de validação de dados",
+      action: "Altere os dados inseridos",
+    });
+  }
+}
+
+
 
 const userModel = {
   createUser,
   findOneUser,
+  update
 };
 
 export default userModel;
