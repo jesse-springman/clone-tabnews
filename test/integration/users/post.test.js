@@ -39,13 +39,13 @@ describe("POST api/v1/users", () => {
       email: "jesseTeste1@gmail.com",
       password: resposeBody.password,
       create_at: resposeBody.create_at,
-      uptade_at: resposeBody.uptade_at,
+      updated_at: resposeBody.updated_at,
     });
 
 
     expect(uuIdVersion(resposeBody.id)).toBe(4); //uuIdVersion() pega o valor passado via argumento e valida se é um uuid pela versão que o Postgres usa que é a 4
     expect(Date.parse(resposeBody.create_at)).not.toBeNaN();
-    expect(Date.parse(resposeBody.uptade_at)).not.toBeNaN();
+    expect(Date.parse(resposeBody.updated_at)).not.toBeNaN();
 
 
     const userInDataBase = await userModel.findOneUser("jesseSpringman");

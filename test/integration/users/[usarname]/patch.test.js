@@ -177,7 +177,7 @@ describe("PATCH api/v1/users/[usarname]", () => {
 
     expect(responsePatch.status).toBe(200);
 
-    const responseBodyUserAtt = responsePatch.json();
+    const responseBodyUserAtt =  await responsePatch.json();
 
     expect(responseBodyUserAtt).toEqual({
       id: responseBodyUserAtt.id,
@@ -185,13 +185,13 @@ describe("PATCH api/v1/users/[usarname]", () => {
       email: "patchCorrect@gmail.com",
       password: responseBodyUserAtt.password,
       create_at: responseBodyUserAtt.create_at,
-      uptade_at: responseBodyUserAtt.uptade_at,
+      updated_at: responseBodyUserAtt.updated_at,
     });
 
 
     expect(uuIdVersion(responseBodyUserAtt.id)).toBe(4); //uuIdVersion() pega o valor passado via argumento e valida se é um uuid pela versão que o Postgres usa que é a 4
     expect(Date.parse(responseBodyUserAtt.create_at)).not.toBeNaN();
-    expect(Date.parse(responseBodyUserAtt.uptade_at)).not.toBeNaN();
+    expect(Date.parse(responseBodyUserAtt.updated_at)).not.toBeNaN();
 
 
 });
