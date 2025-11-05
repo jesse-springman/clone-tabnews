@@ -1,5 +1,7 @@
 import { version as uuIdVersion } from "uuid"; // Descestruturação ja renomeando o metodo que era "version"  para "uuidVersion"
 import orchestrator from "test/orchestrator";
+import password from "models/password";
+import userModel from "models/user";
 
 beforeAll(async () => {
   await orchestrator.waitAllServices();
@@ -10,9 +12,10 @@ beforeAll(async () => {
 describe("PATCH api/v1/users/[usarname]", () => {
   test("user not found", async () => {
     const response = await fetch(
-      "http://localhost:3000/api/v1/users/usarioNaoExistee", {
-      method: "PATCH"
-    }
+      "http://localhost:3000/api/v1/users/usarioNaoExistee",
+      {
+        method: "PATCH",
+      },
     );
 
     expect(response.status).toBe(404);
@@ -26,7 +29,6 @@ describe("PATCH api/v1/users/[usarname]", () => {
       status_code: 404,
     });
   });
-
 
   test("username Duplicated", async () => {
     const user1 = await fetch("http://localhost:3000/api/v1/users", {
@@ -44,7 +46,6 @@ describe("PATCH api/v1/users/[usarname]", () => {
 
     expect(user1.status).toBe(201);
 
-
     const user2 = await fetch("http://localhost:3000/api/v1/users", {
       method: "POST",
       headers: {
@@ -60,18 +61,19 @@ describe("PATCH api/v1/users/[usarname]", () => {
 
     expect(user2.status).toBe(201);
 
+    const responseAttUser = await fetch(
+      "http://localhost:3000/api/v1/users/testPACTH1",
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
 
-
-    const responseAttUser = await fetch("http://localhost:3000/api/v1/users/testPACTH1", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json"
+        body: JSON.stringify({
+          username: "testPACTH2",
+        }),
       },
-
-      body: JSON.stringify({
-        username: 'testPACTH2'
-      })
-    })
+    );
 
     expect(responseAttUser.status).toBe(400);
 
@@ -84,9 +86,6 @@ describe("PATCH api/v1/users/[usarname]", () => {
       status_code: 400,
     });
   });
-
-
-
 
   test("Email   Duplicated", async () => {
     const user1 = await fetch("http://localhost:3000/api/v1/users", {
@@ -104,7 +103,6 @@ describe("PATCH api/v1/users/[usarname]", () => {
 
     expect(user1.status).toBe(201);
 
-
     const user2 = await fetch("http://localhost:3000/api/v1/users", {
       method: "POST",
       headers: {
@@ -120,18 +118,19 @@ describe("PATCH api/v1/users/[usarname]", () => {
 
     expect(user2.status).toBe(201);
 
+    const responseAttUserEmail = await fetch(
+      "http://localhost:3000/api/v1/users/emailPATCH2",
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
 
-
-    const responseAttUserEmail = await fetch("http://localhost:3000/api/v1/users/emailPATCH2", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json"
+        body: JSON.stringify({
+          email: "emailPATCH@gmail.com",
+        }),
       },
-
-      body: JSON.stringify({
-        email: 'emailPATCH@gmail.com'
-      })
-    })
+    );
 
     expect(responseAttUserEmail.status).toBe(400);
 
@@ -145,9 +144,7 @@ describe("PATCH api/v1/users/[usarname]", () => {
     });
   });
 
-
-
-  test("user att data", async () => {
+  test("att username of user", async () => {
     const user1 = await fetch("http://localhost:3000/api/v1/users", {
       method: "POST",
       headers: {
@@ -155,99 +152,161 @@ describe("PATCH api/v1/users/[usarname]", () => {
       },
 
       body: JSON.stringify({
-        username: "patchCorrect",
-        email: "patchCorrect@gmail.com",
+        username: "userCorrect",
+        email: "userCorrect@gmail.com",
         password: "senha123",
       }),
     });
 
     expect(user1.status).toBe(201);
 
+    const responsePatch = await fetch(
+      "http://localhost:3000/api/v1/users/userCorrect",
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
 
-    const responsePatch = await fetch("http://localhost:3000/api/v1/users/patchCorrect", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json"
+        body: JSON.stringify({
+          username: "userAtt",
+        }),
       },
-
-      body: JSON.stringify({
-        username: "userAtt"
-      })
-    })
+    );
 
     expect(responsePatch.status).toBe(200);
 
-    const responseBodyUserAtt =  await responsePatch.json();
+    const responseBodyUserAtt = await responsePatch.json();
 
     expect(responseBodyUserAtt).toEqual({
       id: responseBodyUserAtt.id,
       username: "userAtt",
-      email: "patchCorrect@gmail.com",
+      email: "userCorrect@gmail.com",
       password: responseBodyUserAtt.password,
       create_at: responseBodyUserAtt.create_at,
       updated_at: responseBodyUserAtt.updated_at,
     });
 
+    expect(uuIdVersion(responseBodyUserAtt.id)).toBe(4); //uuIdVersion() pega o valor passado via argumento e valida se é um uuid pela versão que o Postgres usa que é a 4
+    expect(Date.parse(responseBodyUserAtt.create_at)).not.toBeNaN();
+    expect(Date.parse(responseBodyUserAtt.updated_at)).not.toBeNaN();
+    expect(responseBodyUserAtt.updated_at > responseBodyUserAtt.create_at).toBe(
+      true,
+    );
+  });
+
+  test("att email of user", async () => {
+    const user1 = await fetch("http://localhost:3000/api/v1/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+
+      body: JSON.stringify({
+        username: "Correct",
+        email: "emailCorrect@gmail.com",
+        password: "senha123",
+      }),
+    });
+
+    expect(user1.status).toBe(201);
+
+    const responsePatch = await fetch(
+      "http://localhost:3000/api/v1/users/Correct",
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          email: "emailAtualizado@gmail.com",
+        }),
+      },
+    );
+
+    expect(responsePatch.status).toBe(200);
+
+    const responseBodyUserAtt = await responsePatch.json();
+
+    expect(responseBodyUserAtt).toEqual({
+      id: responseBodyUserAtt.id,
+      username: "Correct",
+      email: "emailAtualizado@gmail.com",
+      password: responseBodyUserAtt.password,
+      create_at: responseBodyUserAtt.create_at,
+      updated_at: responseBodyUserAtt.updated_at,
+    });
 
     expect(uuIdVersion(responseBodyUserAtt.id)).toBe(4); //uuIdVersion() pega o valor passado via argumento e valida se é um uuid pela versão que o Postgres usa que é a 4
     expect(Date.parse(responseBodyUserAtt.create_at)).not.toBeNaN();
     expect(Date.parse(responseBodyUserAtt.updated_at)).not.toBeNaN();
+    expect(responseBodyUserAtt.updated_at > responseBodyUserAtt.create_at).toBe(
+      true,
+    );
+  });
 
+  test("att password of user", async () => {
+    const user1 = await fetch("http://localhost:3000/api/v1/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
 
-});
+      body: JSON.stringify({
+        username: "passwordAtt",
+        email: "password@gmail.com",
+        password: "senhavelha",
+      }),
+    });
 
+    expect(user1.status).toBe(201);
 
+    const responsePatch = await fetch(
+      "http://localhost:3000/api/v1/users/passwordAtt",
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
 
+        body: JSON.stringify({
+          password: "senhanova",
+        }),
+      },
+    );
 
+    expect(responsePatch.status).toBe(200);
 
+    const responseBodyUserAtt = await responsePatch.json();
 
+    expect(responseBodyUserAtt).toEqual({
+      id: responseBodyUserAtt.id,
+      username: "passwordAtt",
+      email: "password@gmail.com",
+      password: responseBodyUserAtt.password,
+      create_at: responseBodyUserAtt.create_at,
+      updated_at: responseBodyUserAtt.updated_at,
+    });
 
+    expect(uuIdVersion(responseBodyUserAtt.id)).toBe(4); //uuIdVersion() pega o valor passado via argumento e valida se é um uuid pela versão que o Postgres usa que é a 4
+    expect(Date.parse(responseBodyUserAtt.create_at)).not.toBeNaN();
+    expect(Date.parse(responseBodyUserAtt.updated_at)).not.toBeNaN();
+    expect(responseBodyUserAtt.updated_at > responseBodyUserAtt.create_at).toBe(
+      true,
+    );
 
+    const userInDataBase = await userModel.findOneUser("passwordAtt");
+    const correctPassword = await password.compare(
+      "senhanova",
+      userInDataBase.password,
+    );
+    expect(correctPassword).toBe(true);
 
-
-
-
-
-
-
-
-  // test("Case diferente dando match", async () => {
-  //   const response = await fetch("http://localhost:3000/api/v1/users", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-
-  //     body: JSON.stringify({
-  //       username: "testCaseDiferente",
-  //       email: "TesteCase@gmail.com",
-  //       password: "senha123",
-  //     }),
-  //   });
-
-  //   expect(response.status).toBe(201);
-
-  //   const response2 = await fetch(
-  //     "http://localhost:3000/api/v1/users/testcasediferente",
-  //   );
-
-  //   expect(response2.status).toBe(200);
-
-  //   const resposeBody2 = await response2.json();
-
-  //   expect(resposeBody2).toEqual({
-  //     id: resposeBody2.id,
-  //     username: "testCaseDiferente",
-  //     email: "TesteCase@gmail.com",
-  //     password: resposeBody2.password,
-  //     create_at: resposeBody2.create_at,
-  //     uptade_at: resposeBody2.uptade_at,
-  //   });
-
-  //   expect(uuIdVersion(resposeBody2.id)).toBe(4); //uuIdVersion() pega o valor passado via argumento e valida se é um uuid pela versão que o Postgres usa que é a 4
-  //   expect(Date.parse(resposeBody2.create_at)).not.toBeNaN();
-  //   expect(Date.parse(resposeBody2.uptade_at)).not.toBeNaN();
-  // });
-
-
+    const wrongPassword = await password.compare(
+      "senhavelha",
+      userInDataBase.password,
+    );
+    expect(wrongPassword).toBe(false);
+  });
 });

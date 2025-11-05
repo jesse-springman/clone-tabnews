@@ -1,6 +1,6 @@
 import database from "infra/database";
 import { ValidationError, NotFound } from "infra/erros";
-import password from "./password.js"
+import password from "./password.js";
 
 async function findOneUser(urlUsername) {
   const userFound = await searchUsername(urlUsername);
@@ -15,7 +15,7 @@ async function findOneUser(urlUsername) {
     if (result.rowCount === 0) {
       throw new NotFound({
         message: "Usuário não encontrado",
-        action: "Verifique os dados se estão corretos"
+        action: "Verifique os dados se estão corretos",
       });
     }
 
@@ -27,7 +27,6 @@ async function createUser(inputValuesUser) {
   await validetionUniqueUsername(inputValuesUser.username);
   await validateUniqueEmail(inputValuesUser.email);
   await hashPasswordOnObject(inputValuesUser); //att o obj com hash da senha
-
 
   //  await searchUsername(urlUsername)
 
@@ -46,24 +45,10 @@ async function createUser(inputValuesUser) {
 
     return result.rows[0];
   }
-
-
-
-
-  async function hashPasswordOnObject(inputValuesUser) {
-    if (!inputValuesUser.password) throw new Error("Password não fornecida");
-    const hashedPassword = await password.hash(inputValuesUser.password);
-    inputValuesUser.password = hashedPassword; // substitui a senha original pelo hash antes de salvar no banco
-
-    return inputValuesUser;
-  }
-
 }
 
-
-
 async function update(username, inputUser) {
- const user =  await findOneUser(username);
+  const user = await findOneUser(username);
 
   if ("username" in inputUser) {
     await validetionUniqueUsername(inputUser.username);
@@ -73,17 +58,19 @@ async function update(username, inputUser) {
     await validateUniqueEmail(inputUser.email);
   }
 
-  const dataAtt = { ...user, ...inputUser }
+  if ("password" in inputUser) {
+    await hashPasswordOnObject(inputUser);
+  }
 
-  const userAtt = await updateDataUser(dataAtt)
+  const dataAtt = { ...user, ...inputUser };
 
-  return userAtt
+  const userAtt = await updateDataUser(dataAtt);
 
+  return userAtt;
 
   async function updateDataUser(dataAtt) {
-  const result = await database.query({
-    text:
-          ` UPDATE
+    const result = await database.query({
+      text: ` UPDATE
               users
             SET
               username = $1,
@@ -94,30 +81,20 @@ async function update(username, inputUser) {
               id = $4
             RETURNING * `,
 
-    values:[dataAtt.username,
-            dataAtt.email,
-            dataAtt.password, 
-            dataAtt.id]
-  });
+      values: [dataAtt.username, dataAtt.email, dataAtt.password, dataAtt.id],
+    });
 
-  return result.rows[0];
-
+    return result.rows[0];
+  }
 }
 
+async function hashPasswordOnObject(inputValuesUser) {
+  if (!inputValuesUser.password) throw new Error("Password não fornecida");
+  const hashedPassword = await password.hash(inputValuesUser.password);
+  inputValuesUser.password = hashedPassword; // substitui a senha original pelo hash antes de salvar no banco
 
-
-
-
-
-
-
+  return inputValuesUser;
 }
-
-
-
-
-
-
 
 async function validetionUniqueUsername(username) {
   const usernameInBank = await database.query({
@@ -133,11 +110,6 @@ async function validetionUniqueUsername(username) {
   }
 }
 
-
-
-
-
-
 async function validateUniqueEmail(email) {
   const result = await database.query({
     text: "SELECT email FROM users WHERE LOWER(email) = LOWER($1);",
@@ -152,12 +124,10 @@ async function validateUniqueEmail(email) {
   }
 }
 
-
-
 const userModel = {
   createUser,
   findOneUser,
-  update
+  update,
 };
 
 export default userModel;

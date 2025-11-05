@@ -4,7 +4,7 @@ import userModel from "models/user";
 
 const router = createRouter();
 router.get(getUsarname);
-router.patch(patchUser)
+router.patch(patchUser);
 
 export default router.handler(controllerHandler.errorsHandlers);
 
@@ -17,11 +17,10 @@ async function getUsarname(request, response) {
 }
 
 async function patchUser(request, response) {
-    const username = request.query.username;
-    const inputValuesUser = request.body
+  const username = request.query.username;
+  const inputValuesUser = request.body;
 
-   const updatedUser = await userModel.update(username, inputValuesUser);
+  const updatedUser = await userModel.update(username, inputValuesUser);
 
-
-   return response.json(updatedUser);
+  return response.json(updatedUser);
 }

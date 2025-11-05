@@ -4,15 +4,11 @@ import userModel from "models/user.js";
 import password from "models/password.js";
 import "dotenv/config";
 
-
-
 beforeAll(async () => {
   await orchestrator.waitAllServices();
   await orchestrator.databaseClean();
   await orchestrator.runPendingMigrations();
 });
-
-
 
 describe("POST api/v1/users", () => {
   test("validation unique data", async () => {
@@ -42,17 +38,21 @@ describe("POST api/v1/users", () => {
       updated_at: resposeBody.updated_at,
     });
 
-
     expect(uuIdVersion(resposeBody.id)).toBe(4); //uuIdVersion() pega o valor passado via argumento e valida se é um uuid pela versão que o Postgres usa que é a 4
     expect(Date.parse(resposeBody.create_at)).not.toBeNaN();
     expect(Date.parse(resposeBody.updated_at)).not.toBeNaN();
 
-
     const userInDataBase = await userModel.findOneUser("jesseSpringman");
-    const correctPasswordMatch = await password.compare("senha123", userInDataBase.password);
+    const correctPasswordMatch = await password.compare(
+      "senha123",
+      userInDataBase.password,
+    );
     expect(correctPasswordMatch).toBe(true);
 
-    const wrongPasswordMatch = await password.compare("senhaErrada",userInDataBase.password);
+    const wrongPasswordMatch = await password.compare(
+      "senhaErrada",
+      userInDataBase.password,
+    );
     expect(wrongPasswordMatch).toBe(false);
   });
 });
