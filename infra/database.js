@@ -9,7 +9,7 @@ async function query(queryObject) {
     return resultado;
   } catch (error) {
     const errorService = new ServicesError({
-      messagee: "Erro na conexão com o Banco de Dados ou na Query",
+      message: "Erro na conexão com o Banco de Dados ou na Query",
       cause: error,
     });
 
@@ -19,14 +19,16 @@ async function query(queryObject) {
   }
 }
 
+const isDevelopment = process.env.NODE_ENV === "development";
+
 async function getNewClient() {
   const client = new Client({
     host: process.env.POSTGRES_HOST,
-    port: process.env.POSTGRES_PORTS,
+    port: process.env.POSTGRES_PORT,
     user: process.env.POSTGRES_USER,
     database: process.env.POSTGRES_DB,
     password: process.env.POSTGRES_PASSWORD,
-    ssl: process.env.NODE_ENV === "production",
+    ssl: isDevelopment ? false : { rejectUnauthorized: false },
   });
 
   await client.connect();

@@ -15,6 +15,8 @@
     "services:wait:database": "node infra/scripts/waitPostgres.js",
     "migrations:create": "node-pg-migrate --migrations-dir infra/migrations create",
     "migrations:up": "node-pg-migrate --migrations-dir infra/migrations --envPath .env.development up",
+    "migrations:up:homolog": "node-pg-migrate --migrations-dir infra/migrations --envPath .env.homologation up",
+    "migrations:down:homolog": "node-pg-migrate --migrations-dir infra/migrations --envPath .env.homologation down",
     "lint:prettier:check": "prettier --check .",
     "lint:prettier:fix": "prettier --write .",
     "lint:eslint:check": "eslint .",
