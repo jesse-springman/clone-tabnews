@@ -9,7 +9,7 @@ router.get(getHandle);
 export default router.handler(controllerHandler.errorsHandlers);
 
 async function getHandle(request, response) {
-  const uptadeAlt = new Date().toISOString();
+  const updateAlt = new Date().toISOString();
 
   const dataMaxConnect = await databaseDev.query("SHOW max_connections;");
 
@@ -29,7 +29,7 @@ async function getHandle(request, response) {
   const version = dataVersionPostgres.rows[0].server_version;
 
   response.status(200).json({
-    uptade_alt: uptadeAlt,
+    updated_at: updateAlt,
     dependencies: {
       database: {
         max_connections,

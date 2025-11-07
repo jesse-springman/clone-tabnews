@@ -24,7 +24,7 @@ function UpdateAlt() {
   let updateAltText = "Carregando";
 
   if (!isLoading && data) {
-    updateAltText = new Date(data.uptade_alt).toLocaleString("pt-BR");
+    updateAltText = new Date(data.updated_alt).toLocaleString("pt-BR");
   }
 
   return (

@@ -20,8 +20,8 @@ export class InternalServerError extends Error {
 }
 
 export class ServicesError extends Error {
-  constructor({ messagee, cause }) {
-    super(messagee || "Um erro no banco de dados não esparado aconteceu", {
+  constructor({ message, cause }) {
+    super(message || "Um erro no banco de dados não esparado aconteceu", {
       cause,
     });
 

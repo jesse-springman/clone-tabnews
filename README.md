@@ -1,3 +1,5 @@
-# clone-tabnews
+# Meu Projeto
 
-testando conhecimento passado pelo mestre flipe Deschamps
+![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
+
+Desenvolvendo a feature de segurança (encriptação, validação)

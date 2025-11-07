@@ -36,14 +36,14 @@ describe("GET api/v1/users/[usarname]", () => {
       id: resposeBody2.id,
       username: "testUSERNAME",
       email: "jesseTesteDinamic@gmail.com",
-      password: "senha123",
+      password: resposeBody2.password,
       create_at: resposeBody2.create_at,
-      uptade_at: resposeBody2.uptade_at,
+      updated_at: resposeBody2.updated_at,
     });
 
     expect(uuIdVersion(resposeBody2.id)).toBe(4); //uuIdVersion() pega o valor passado via argumento e valida se é um uuid pela versão que o Postgres usa que é a 4
     expect(Date.parse(resposeBody2.create_at)).not.toBeNaN();
-    expect(Date.parse(resposeBody2.uptade_at)).not.toBeNaN();
+    expect(Date.parse(resposeBody2.updated_at)).not.toBeNaN();
   });
 
   test("Case diferente dando match", async () => {
@@ -74,14 +74,14 @@ describe("GET api/v1/users/[usarname]", () => {
       id: resposeBody2.id,
       username: "testCaseDiferente",
       email: "TesteCase@gmail.com",
-      password: "senha123",
+      password: resposeBody2.password,
       create_at: resposeBody2.create_at,
-      uptade_at: resposeBody2.uptade_at,
+      updated_at: resposeBody2.updated_at,
     });
 
     expect(uuIdVersion(resposeBody2.id)).toBe(4); //uuIdVersion() pega o valor passado via argumento e valida se é um uuid pela versão que o Postgres usa que é a 4
     expect(Date.parse(resposeBody2.create_at)).not.toBeNaN();
-    expect(Date.parse(resposeBody2.uptade_at)).not.toBeNaN();
+    expect(Date.parse(resposeBody2.updated_at)).not.toBeNaN();
   });
 
   test("user not found", async () => {
