@@ -17,6 +17,7 @@
     "migrations:up": "node-pg-migrate --migrations-dir infra/migrations --envPath .env.development up",
     "migrations:up:homolog": "node-pg-migrate --migrations-dir infra/migrations --envPath .env.homologation up",
     "migrations:down:homolog": "node-pg-migrate --migrations-dir infra/migrations --envPath .env.homologation down",
+    "migrations:up:prod": "node-pg-migrate --migrations-dir infra/migrations --envPath .env.production up",
     "lint:prettier:check": "prettier --check .",
     "lint:prettier:fix": "prettier --write .",
     "lint:eslint:check": "eslint .",
